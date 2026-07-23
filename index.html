@@ -319,7 +319,7 @@ function dpFetchData(filters, onSuccess, onError){
     return;
   }
   // Mode luar Apps Script (GitHub Pages, dsb) -> ambil data lewat Web App
-  var qs = [];
+  var qs = ['action=dashboard'];
   if (filters.startDate) qs.push('startDate=' + encodeURIComponent(filters.startDate));
   if (filters.endDate) qs.push('endDate=' + encodeURIComponent(filters.endDate));
   if (filters.days) qs.push('days=' + encodeURIComponent(filters.days.join(',')));
