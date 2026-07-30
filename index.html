@@ -432,8 +432,7 @@ function dpRenderThermo(d){
 
   var s = d.summary;
   var pctBars = d.rows.map(function(r){ return { label: r.tf, value: r.pct, color: r.low ? '#EF4444' : '#3B82F6' }; });
-  var produkTop = dpTopNPlusOther(d.rowsByProduk || [], 'box', 'produk', 8);
-  var produkSlices = produkTop.map(function(p,i){ return { label: p.label, value: p.value, color: PALETTE[i % PALETTE.length] }; });
+  var tonaseSlices = d.rows.map(function(r,i){ return { label: r.tf, value: r.tonase, color: PALETTE[i % PALETTE.length] }; });
 
   var html = '<h2>Ringkasan — Sheet HASIL THERMO</h2>';
   html += `<div class="stat-row">
@@ -446,7 +445,7 @@ function dpRenderThermo(d){
     <div class="chart-card" style="flex:1 1 100%;"><h3>Percentage per Mesin TF (Tonase ÷ Pemakaian Sheet) — merah = di bawah ${s.threshold}%</h3>${dpBarsHtml(pctBars,2)}</div>
   </div>`;
   html += `<div class="chart-row">
-    <div class="chart-card"><h3>Total Hasil per Produk</h3>${dpDonutHtml(produkSlices,'Box')}</div>
+    <div class="chart-card"><h3>Kontribusi Tonase per Mesin TF</h3>${dpDonutHtml(tonaseSlices,'Kg')}</div>
   </div>`;
   html += '<h2>Per Mesin TF</h2>';
   html += '<table><thead><tr><th>TF</th><th>Sheet Naik</th><th>Pemakaian Sheet</th><th>Box</th><th>Pcs</th><th>Tonase</th><th>Gram</th><th>BS Skalaton</th><th>BS Sheet</th><th>Waste</th><th>%</th></tr></thead><tbody>';
