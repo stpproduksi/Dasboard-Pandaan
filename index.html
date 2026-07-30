@@ -1,544 +1,266 @@
 <!DOCTYPE html>
 <html>
 <head>
-<base target="_top">
-<meta charset="utf-8">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
-<style>
-  :root{
-    --bg:#F5F7FB;
-    --card:#FFFFFF;
-    --panel:#FFFFFF;
-    --line:#E7EAF1;
-    --ink:#1F2433;
-    --mute:#7A8296;
+  <base target="_top">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Dashboard Produksi</title>
+  <!-- CSS Library -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Segoe+UI:wght@400;600;700&display=swap" rel="stylesheet">
+  
+  <style>
+    :root {
+      --primary-color: #007bff;
+      --danger-color: #dc3545;
+      --success-color: #198754;
+      --bg-body: #f4f7f6;
+    }
+    
+    body { 
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+      background-color: var(--bg-body); 
+      font-size: 14px;
+      margin: 0; padding: 0;
+    }
 
-    --c1:#FF7A45; /* oranye - Giling */
-    --c2:#14B8A6; /* teal - WIP bahan */
-    --c3:#8B5CF6; /* ungu - WIP wip / thermo */
-    --c4:#3B82F6; /* biru - Extruder / Total Sheet */
-    --c5:#EC4899; /* pink - Thermo */
-    --c6:#F59E0B; /* amber - waste */
-    --c7:#22C55E; /* hijau - baik/ok */
-    --c8:#EF4444; /* merah - waste/downtime */
-    --c9:#64748B; /* abu - lainnya */
+    /* Navbar khusus Mobile friendly */
+    .nav-custom {
+      background: #ffffff;
+      padding: 10px 15px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      position: sticky; top: 0; z-index: 1000;
+    }
 
-    --grad: linear-gradient(135deg, var(--c1), var(--c5));
-  }
-  *{box-sizing:border-box;}
-  html,body{margin:0;padding:0;height:100%;}
-  body{
-    font-family:'Space Grotesk', system-ui, -apple-system, sans-serif;
-    background:var(--bg);
-    color:var(--ink);
-    display:flex;
-    height:100vh;
-    overflow:hidden;
-  }
-  @media (prefers-reduced-motion: reduce){ *{transition:none !important; animation:none !important;} }
+    .container-main { padding: 15px; }
 
-  /* ===== LEFT PANEL ===== */
-  #panel{
-    width:250px; min-width:250px;
-    background:var(--panel);
-    border-right:1px solid var(--line);
-    padding:18px 16px;
-    display:flex; flex-direction:column; gap:16px;
-    overflow-y:auto;
-  }
-  #panel h1{
-    font-size:16px; letter-spacing:.02em; margin:0;
-    background:var(--grad);
-    -webkit-background-clip:text; background-clip:text; color:transparent;
-  }
-  .panel-sub{font-size:10.5px; color:var(--mute); margin-top:-10px;}
-  .ctrl-group{
-    background:#FAFBFD; border:1px solid var(--line); border-radius:12px;
-    padding:12px 12px 14px;
-  }
-  .ctrl-label{font-size:10px; text-transform:uppercase; letter-spacing:.07em; color:var(--mute); margin-bottom:8px; display:block; font-weight:600;}
-  .date-row{display:flex; flex-direction:column; gap:8px;}
-  .date-row label{font-size:11px; color:#4B5468; display:block; margin-bottom:3px;}
-  input[type=date]{
-    width:100%; background:#fff; border:1px solid #D7DCE6; color:var(--ink);
-    border-radius:7px; padding:6px 7px; font-family:'Space Mono', monospace; font-size:12px;
-  }
-  .hari-grid{display:flex; gap:5px; flex-wrap:wrap;}
-  .hari-btn{
-    flex:1 1 auto; min-width:30px; text-align:center; padding:7px 0;
-    border-radius:7px; background:#fff; border:1px solid #D7DCE6; color:#8A93A8;
-    font-family:'Space Mono', monospace; font-size:10.5px; cursor:pointer; user-select:none;
-  }
-  .hari-btn.on{ background:var(--grad); border-color:transparent; color:#fff; }
-  #btnApply{
-    background:var(--grad); color:#fff; border:none; border-radius:9px; padding:11px 10px;
-    font-family:'Space Grotesk', sans-serif; font-weight:700; font-size:12.5px;
-    letter-spacing:.03em; text-transform:uppercase; cursor:pointer;
-    box-shadow:0 6px 14px -6px rgba(236,73,153,.55);
-  }
-  #btnApply:active{transform:translateY(1px);}
-  #btnReset{
-    background:transparent; color:var(--mute); border:1px solid #D7DCE6; border-radius:9px;
-    padding:8px 10px; font-size:11px; cursor:pointer; font-family:'Space Grotesk', sans-serif;
-  }
-  #statusLine{
-    font-family:'Space Mono', monospace; font-size:10px; color:var(--mute); margin-top:auto;
-    line-height:1.5; border-top:1px solid var(--line); padding-top:10px;
-  }
-  #statusLine b{color:var(--ink);}
+    /* Card Styling */
+    .card {
+      border: none; border-radius: 10px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+      margin-bottom: 15px;
+    }
+    .card-header {
+      background: #fff; border-bottom: 1px solid #eee;
+      font-weight: 700; color: #333; padding: 12px 15px;
+    }
 
-  /* ===== MAIN ===== */
-  #main{flex:1; display:flex; flex-direction:column; min-width:0;}
-  #tabs{ display:flex; background:#fff; border-bottom:1px solid var(--line); padding:0 10px; overflow-x:auto; }
-  .tab{
-    padding:13px 16px 11px; color:var(--mute); font-size:12px; letter-spacing:.03em;
-    text-transform:uppercase; cursor:pointer; border-bottom:3px solid transparent;
-    white-space:nowrap; font-weight:600;
-  }
-  .tab.active{ color:var(--ink); border-bottom-color:var(--c5); }
-  #content{ flex:1; overflow-y:auto; padding:20px 24px 40px; }
-  .section{display:none;}
-  .section.active{display:block;}
+    /* Metric Boxes */
+    .metric-box { padding: 15px; text-align: center; }
+    .metric-value { font-size: 1.5rem; font-weight: 800; display: block; }
+    .metric-label { font-size: 0.75rem; color: #666; text-transform: uppercase; letter-spacing: 1px; }
 
-  .stat-row{display:flex; gap:12px; flex-wrap:wrap; margin-bottom:16px;}
-  .stat-card{
-    background:var(--card); border:1px solid var(--line); border-radius:12px;
-    padding:12px 16px; min-width:150px; flex:1 1 150px;
-  }
-  .stat-card .k{font-size:10px; text-transform:uppercase; letter-spacing:.07em; color:var(--mute); font-weight:600;}
-  .stat-card .v{font-family:'Space Mono', monospace; font-size:20px; font-weight:700; margin-top:4px;}
-  .stat-card .v.good{color:var(--c7);}
-  .stat-card .v.bad{color:var(--c8);}
-  .stat-card .v.accent{color:var(--c1);}
+    /* Table Styling */
+    .table-responsive { max-height: 400px; overflow-y: auto; }
+    .table thead th { position: sticky; top: 0; background: #f8f9fa; z-index: 1; }
 
-  /* chart row: donut + legend or bar chart, side by side */
-  .chart-row{ display:flex; gap:20px; flex-wrap:wrap; margin-bottom:18px; }
-  .chart-card{
-    background:var(--card); border:1px solid var(--line); border-radius:14px;
-    padding:16px 18px; flex:1 1 320px;
-  }
-  .chart-card h3{ margin:0 0 12px; font-size:11px; text-transform:uppercase; letter-spacing:.06em; color:var(--mute); font-weight:700;}
+    /* Conditional Colors */
+    .val-danger { color: var(--danger-color) !important; }
+    .val-success { color: var(--success-color) !important; }
 
-  .donut-wrap{ display:flex; align-items:center; gap:18px; flex-wrap:wrap; }
-  .donut{ width:132px; height:132px; border-radius:50%; flex:none; display:flex; align-items:center; justify-content:center; }
-  .donut-hole{ width:80px; height:80px; border-radius:50%; background:#fff; display:flex; flex-direction:column; align-items:center; justify-content:center; }
-  .donut-hole .tot{ font-family:'Space Mono', monospace; font-weight:700; font-size:15px; }
-  .donut-hole .lbl{ font-size:9px; color:var(--mute); text-transform:uppercase; letter-spacing:.05em; }
-  .legend{ flex:1; min-width:140px; display:flex; flex-direction:column; gap:6px; }
-  .legend-item{ display:flex; align-items:center; gap:7px; font-size:11.5px; }
-  .legend-dot{ width:9px; height:9px; border-radius:50%; flex:none; }
-  .legend-name{ flex:1; color:var(--ink); }
-  .legend-pct{ font-family:'Space Mono', monospace; color:var(--mute); font-size:11px; }
+    /* Loading Overlay */
+    #loader {
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(255,255,255,0.9); z-index: 2000;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+    }
 
-  .bars{ display:flex; flex-direction:column; gap:10px; }
-  .bar-row{ display:flex; align-items:center; gap:10px; }
-  .bar-name{ width:110px; font-size:11.5px; color:var(--ink); flex:none; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
-  .bar-track{ flex:1; height:14px; background:#EEF1F7; border-radius:7px; overflow:hidden; }
-  .bar-fill{ height:100%; border-radius:7px 0 0 7px; transition:width .5s ease; }
-  .bar-val{ width:64px; text-align:right; font-family:'Space Mono', monospace; font-size:11px; color:var(--mute); flex:none; }
+    /* Custom scrollbar */
+    ::-webkit-scrollbar { width: 5px; }
+    ::-webkit-scrollbar-track { background: #f1f1f1; }
+    ::-webkit-scrollbar-thumb { background: #ccc; border-radius: 10px; }
 
-  table{width:100%; border-collapse:collapse; background:var(--card); border-radius:12px; overflow:hidden; border:1px solid var(--line);}
-  thead th{
-    background:#FAFBFD; font-size:10px; text-transform:uppercase; letter-spacing:.06em; color:var(--mute);
-    text-align:left; padding:9px 10px; border-bottom:1px solid var(--line); font-weight:700;
-  }
-  tbody td{ padding:9px 10px; font-size:12.5px; border-bottom:1px solid #F1F3F8; font-family:'Space Mono', monospace; }
-  tbody td.name{ font-family:'Space Grotesk', sans-serif; }
-  tbody tr:last-child td{border-bottom:none;}
-
-  .gauge{ display:flex; align-items:center; gap:8px; min-width:150px; }
-  .gauge-track{ position:relative; flex:1; height:9px; background:#EEF1F7; border-radius:5px; overflow:hidden; }
-  .gauge-fill{ height:100%; border-radius:5px 0 0 5px; width:0%; transition:width .5s ease; }
-  .gauge-num{ font-family:'Space Mono', monospace; font-size:11px; width:44px; text-align:right; }
-
-  .section h2{ font-size:13px; text-transform:uppercase; letter-spacing:.05em; color:var(--mute); margin:22px 0 8px; }
-  .section h2:first-child{margin-top:0;}
-  .note{font-size:11px; color:var(--mute); margin-top:8px;}
-  .empty{color:var(--mute); font-size:12.5px; padding:20px 0;}
-  .err{color:var(--c8); font-size:12.5px; padding:10px 0;}
-  #loading{ position:fixed; inset:0; background:rgba(31,36,51,.35); display:none; align-items:center; justify-content:center; z-index:50; }
-  #loading.show{display:flex;}
-  #loading span{ font-family:'Space Mono', monospace; color:#1F2433; font-size:12px; background:#fff; padding:10px 16px; border-radius:9px; border:1px solid var(--c5); }
-</style>
+    /* Mobile Specific */
+    @media (max-width: 576px) {
+      .metric-value { font-size: 1.2rem; }
+      .container-main { padding: 8px; }
+      .nav-custom { flex-direction: column; gap: 10px; }
+      .btn-sm-full { width: 100%; }
+    }
+  </style>
 </head>
 <body>
 
-<div id="panel">
-  <h1>Dashboard Produksi</h1>
-  <div class="panel-sub">Slicer TANGGAL / HARI — semua sheet</div>
+<div id="loader">
+  <div class="spinner-border text-primary" role="status"></div>
+  <span class="mt-2 fw-bold">Mematikan Data...</span>
+</div>
 
-  <div class="ctrl-group">
-    <span class="ctrl-label">Rentang Tanggal</span>
-    <div class="date-row">
-      <div><label>Dari</label><input type="date" id="startDate"></div>
-      <div><label>Sampai</label><input type="date" id="endDate"></div>
+<div class="nav-custom d-flex justify-content-between align-items-center">
+  <div class="fw-bold text-primary fs-5">PRODUKSI-DASHBOARD</div>
+  <div class="d-flex gap-1 align-items-center">
+    <input type="date" id="tgl1" class="form-control form-control-sm">
+    <input type="date" id="tgl2" class="form-control form-control-sm">
+    <button onclick="fetchData()" class="btn btn-primary btn-sm btn-sm-full">OK</button>
+  </div>
+</div>
+
+<div class="container-main">
+  
+  <!-- Row 1: Summary -->
+  <div class="row g-2 mb-2">
+    <div class="col-6 col-md-3">
+      <div class="card metric-box">
+        <span class="metric-label">Giling (Kg)</span>
+        <span id="m-giling" class="metric-value">-</span>
+      </div>
+    </div>
+    <div class="col-6 col-md-3">
+      <div class="card metric-box">
+        <span class="metric-label">Downtime</span>
+        <span id="m-dt" class="metric-value text-danger">-</span>
+      </div>
+    </div>
+    <div class="col-6 col-md-3">
+      <div class="card metric-box border-start border-4 border-info">
+        <span class="metric-label">Avg. Thermo</span>
+        <span id="m-thermo" class="metric-value">-</span>
+      </div>
+    </div>
+    <div class="col-6 col-md-3">
+      <div class="card metric-box border-start border-4 border-success">
+        <span class="metric-label">WIP Ratio</span>
+        <span id="m-wip" class="metric-value">-</span>
+      </div>
     </div>
   </div>
 
-  <div class="ctrl-group">
-    <span class="ctrl-label">Hari</span>
-    <div class="hari-grid" id="hariGrid"></div>
+  <div class="row g-3">
+    <!-- Thermo Product Table -->
+    <div class="col-lg-8">
+      <div class="card">
+        <div class="card-header d-flex justify-content-between">
+          <span>TARGET & EFF. PRODUK (THERMO)</span>
+          <span class="badge bg-danger">Min 40%</span>
+        </div>
+        <div class="table-responsive">
+          <table class="table table-sm table-hover mb-0">
+            <thead>
+              <tr>
+                <th class="ps-3">Produk / TF</th>
+                <th class="text-end">Box</th>
+                <th class="text-end">Tonase</th>
+                <th class="text-end pe-3">Eff %</th>
+              </tr>
+            </thead>
+            <tbody id="tbody-thermo"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Line & Quality Sidebar -->
+    <div class="col-lg-4">
+      <!-- Line Stats -->
+      <div class="card mb-3">
+        <div class="card-header">KONTRIBUSI LINE SHEET</div>
+        <div class="list-group list-group-flush" id="list-line"></div>
+      </div>
+
+      <!-- Quality Loss -->
+      <div class="card bg-dark text-white p-3">
+        <div class="fw-bold mb-3 text-center border-bottom border-secondary pb-2">QUALITY LOSS ANALYSIS</div>
+        <div class="row g-2 text-center">
+          <div class="col-4">
+            <div id="q-sayat" class="fw-bold text-warning fs-5">0%</div>
+            <div class="small text-secondary">Sayat</div>
+          </div>
+          <div class="col-4">
+            <div id="q-sheet" class="fw-bold text-warning fs-5">0%</div>
+            <div class="small text-secondary">BS Sheet</div>
+          </div>
+          <div class="col-4">
+            <div id="q-waste" class="fw-bold text-warning fs-5">0%</div>
+            <div class="small text-secondary">Waste</div>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 
-  <button id="btnApply" onclick="dpApplyFilter()">Terapkan Filter</button>
-  <button id="btnReset" onclick="dpResetFilter()">Reset</button>
-
-  <div id="statusLine">
-    Baris terbaca: <b id="stCount">-</b><br>
-    Update: <b id="stTime">-</b>
+  <div class="text-center mt-4 pb-4">
+    <small class="text-muted">Update terakhir: <span id="sync-time">-</span></small>
   </div>
+
 </div>
-
-<div id="main">
-  <div id="tabs">
-    <div class="tab active" data-tab="giling" onclick="dpSwitchTab('giling')">Giling</div>
-    <div class="tab" data-tab="wip" onclick="dpSwitchTab('wip')">WIP</div>
-    <div class="tab" data-tab="thermo" onclick="dpSwitchTab('thermo')">Thermo</div>
-    <div class="tab" data-tab="extruder" onclick="dpSwitchTab('extruder')">Extruder</div>
-    <div class="tab" data-tab="totalSheet" onclick="dpSwitchTab('totalSheet')">Total Sheet</div>
-    <div class="tab" data-tab="tehnik" onclick="dpSwitchTab('tehnik')">Tehnik</div>
-  </div>
-
-  <div id="content">
-    <div class="section active" id="sec-giling"></div>
-    <div class="section" id="sec-wip"></div>
-    <div class="section" id="sec-thermo"></div>
-    <div class="section" id="sec-extruder"></div>
-    <div class="section" id="sec-totalSheet"></div>
-    <div class="section" id="sec-tehnik"></div>
-  </div>
-</div>
-
-<div id="loading"><span>MEMUAT DATA…</span></div>
 
 <script>
-var HARI_LABEL = ['Min','Sen','Sel','Rab','Kam','Jum','Sab'];
-var hariSelected = [0,1,2,3,4,5,6];
-var PALETTE = ['#FF7A45','#3B82F6','#8B5CF6','#EC4899','#14B8A6','#F59E0B','#22C55E','#EF4444','#64748B'];
-
-function dpBuildHariButtons(){
-  var grid = document.getElementById('hariGrid');
-  grid.innerHTML = '';
-  HARI_LABEL.forEach(function(label, idx){
-    var btn = document.createElement('div');
-    btn.className = 'hari-btn' + (hariSelected.indexOf(idx) !== -1 ? ' on' : '');
-    btn.textContent = label;
-    btn.onclick = function(){
-      var pos = hariSelected.indexOf(idx);
-      if (pos === -1) hariSelected.push(idx); else hariSelected.splice(pos,1);
-      dpBuildHariButtons();
-    };
-    grid.appendChild(btn);
-  });
-}
-dpBuildHariButtons();
-
-function dpSwitchTab(name){
-  document.querySelectorAll('.tab').forEach(function(t){ t.classList.toggle('active', t.dataset.tab === name); });
-  document.querySelectorAll('.section').forEach(function(s){ s.classList.remove('active'); });
-  document.getElementById('sec-' + name).classList.add('active');
-}
-
-function dpResetFilter(){
-  document.getElementById('startDate').value = '';
-  document.getElementById('endDate').value = '';
-  hariSelected = [0,1,2,3,4,5,6];
-  dpBuildHariButtons();
-  dpApplyFilter();
-}
-
-function dpFmt(n, dec){
-  dec = dec === undefined ? 2 : dec;
-  if (n === null || n === undefined || isNaN(n)) return '-';
-  return Number(n).toLocaleString('id-ID', {minimumFractionDigits:dec, maximumFractionDigits:dec});
-}
-
-function dpGaugeHtml(pct, color, decimals){
-  var p = Math.max(0, Math.min(100, pct || 0));
-  var dec = decimals === undefined ? 2 : decimals;
-  return `<div class="gauge"><div class="gauge-track"><div class="gauge-fill" style="width:${p}%;background:${color||'var(--c1)'}"></div></div><div class="gauge-num">${dpFmt(p,dec)}%</div></div>`;
-}
-
-/* ---- generic donut chart: slices = [{label, value, color}] ---- */
-function dpDonutHtml(slices, centerLabel){
-  var total = slices.reduce(function(s,x){ return s + (x.value||0); }, 0);
-  var stops = [];
-  var acc = 0;
-  slices.forEach(function(s){
-    var pct = total > 0 ? (s.value/total*100) : 0;
-    var start = acc;
-    var end = acc + pct;
-    stops.push(s.color + ' ' + start.toFixed(2) + '% ' + end.toFixed(2) + '%');
-    acc = end;
-  });
-  var gradient = stops.length ? 'conic-gradient(' + stops.join(',') + ')' : '#EEF1F7';
-  var legend = slices.map(function(s){
-    var pct = total > 0 ? (s.value/total*100) : 0;
-    return `<div class="legend-item"><div class="legend-dot" style="background:${s.color}"></div><div class="legend-name">${s.label}</div><div class="legend-pct">${dpFmt(pct,2)}%</div></div>`;
-  }).join('');
-  return `<div class="donut-wrap">
-    <div class="donut" style="background:${gradient}">
-      <div class="donut-hole"><div class="tot">${dpFmt(total)}</div><div class="lbl">${centerLabel||'Total'}</div></div>
-    </div>
-    <div class="legend">${legend}</div>
-  </div>`;
-}
-
-/* ---- generic horizontal bar chart: items = [{label, value, color}] ---- */
-function dpBarsHtml(items, decimals){
-  var max = items.reduce(function(m,x){ return Math.max(m, x.value||0); }, 0) || 1;
-  return '<div class="bars">' + items.map(function(it){
-    var w = Math.max(2, (it.value||0)/max*100);
-    return `<div class="bar-row"><div class="bar-name" title="${it.label}">${it.label}</div><div class="bar-track"><div class="bar-fill" style="width:${w}%;background:${it.color||'var(--c4)'}"></div></div><div class="bar-val">${dpFmt(it.value, decimals===undefined?2:decimals)}</div></div>`;
-  }).join('') + '</div>';
-}
-
-function dpTopNPlusOther(rows, valueKey, labelKey, n){
-  var sorted = rows.slice().sort(function(a,b){ return (b[valueKey]||0) - (a[valueKey]||0); });
-  var top = sorted.slice(0, n);
-  var rest = sorted.slice(n);
-  var restSum = rest.reduce(function(s,r){ return s + (r[valueKey]||0); }, 0);
-  var out = top.map(function(r){ return { label: r[labelKey], value: r[valueKey] }; });
-  if (rest.length) out.push({ label: 'Lainnya (' + rest.length + ')', value: restSum });
-  return out;
-}
-
-// Isi dengan URL Web App (diakhiri /exec) setelah Deploy > New deployment > Web app.
-// Hanya dipakai kalau file ini dibuka DI LUAR Apps Script (misal di-host di GitHub Pages).
-// Kalau dibuka lewat menu di Spreadsheet, baris ini diabaikan otomatis.
-var WEBAPP_URL = 'https://script.google.com/macros/s/AKfycbzRENhBkpBfGPRqX4xAOGTbuaxtu-FJWDmpysx5bf5G0-LmofzywkbOXq_NjcWpTSEG/exec';
-
-function dpFetchData(filters, onSuccess, onError){
-  var runningInsideAppsScript = (typeof google !== 'undefined' && google.script && google.script.run);
-  if (runningInsideAppsScript) {
-    google.script.run
-      .withSuccessHandler(onSuccess)
-      .withFailureHandler(onError)
-      .dpGetDashboardData(filters);
-    return;
-  }
-  // Mode luar Apps Script (GitHub Pages, dsb) -> ambil data lewat Web App
-  var qs = ['action=dashboard'];
-  if (filters.startDate) qs.push('startDate=' + encodeURIComponent(filters.startDate));
-  if (filters.endDate) qs.push('endDate=' + encodeURIComponent(filters.endDate));
-  if (filters.days) qs.push('days=' + encodeURIComponent(filters.days.join(',')));
-  fetch(WEBAPP_URL + '?' + qs.join('&'))
-    .then(function(res){ return res.json(); })
-    .then(onSuccess)
-    .catch(onError);
-}
-
-function dpApplyFilter(){
-  var filters = {
-    startDate: document.getElementById('startDate').value || null,
-    endDate: document.getElementById('endDate').value || null,
-    days: hariSelected.slice()
+  // Initial Load
+  window.onload = function() {
+    const today = new Date().toISOString().split('T')[0];
+    document.getElementById('tgl1').value = today;
+    document.getElementById('tgl2').value = today;
+    fetchData();
   };
-  document.getElementById('loading').classList.add('show');
-  dpFetchData(filters, function(data){
-    document.getElementById('loading').classList.remove('show');
-    dpRenderAll(data);
-  }, function(err){
-    document.getElementById('loading').classList.remove('show');
-    document.getElementById('content').innerHTML = '<div class="err">Gagal memuat data: ' + (err && err.message ? err.message : err) + '</div>';
-  });
-}
 
-function dpRenderAll(data){
-  document.getElementById('stTime').textContent = new Date(data.generatedAt).toLocaleString('id-ID');
-  var totalRows = 0;
-  ['giling','wip','thermo','extruder','totalSheet','tehnik'].forEach(function(k){
-    if (data[k] && data[k].rows) totalRows += data[k].rows.length;
-  });
-  document.getElementById('stCount').textContent = totalRows;
-
-  dpRenderGiling(data.giling);
-  dpRenderWIP(data.wip);
-  dpRenderThermo(data.thermo);
-  dpRenderExtruder(data.extruder);
-  dpRenderTotalSheet(data.totalSheet);
-  dpRenderTehnik(data.tehnik);
-}
-
-function dpErrorOrEmpty(container, d, emptyMsg){
-  if (!d) { container.innerHTML = '<div class="empty">' + emptyMsg + '</div>'; return true; }
-  if (d.error) { container.innerHTML = '<div class="err">' + d.error + '</div>'; return true; }
-  if (!d.rows || d.rows.length === 0) { container.innerHTML = '<div class="empty">' + emptyMsg + '</div>'; return true; }
-  return false;
-}
-
-/* ---------- 1. GILING ---------- */
-function dpRenderGiling(d){
-  var el = document.getElementById('sec-giling');
-  if (dpErrorOrEmpty(el, d, 'Tidak ada data GILING pada rentang filter ini.')) return;
-
-  var slices = d.rows.map(function(r, i){ return { label: r.category, value: r.total, color: PALETTE[i % PALETTE.length] }; });
-
-  var html = '<h2>Total Produksi per Category — Sheet GILING</h2>';
-  html += `<div class="stat-row">
-    <div class="stat-card"><div class="k">Grand Total</div><div class="v accent">${dpFmt(d.grandTotal)}</div></div>
-    <div class="stat-card"><div class="k">Jumlah Baris</div><div class="v">${d.rowCount}</div></div>
-  </div>`;
-  html += `<div class="chart-row"><div class="chart-card"><h3>Komposisi per Category</h3>${dpDonutHtml(slices,'Total')}</div></div>`;
-  html += '<table><thead><tr><th>Category</th><th>Shift 1</th><th>Shift 2</th><th>Shift 3</th><th>Total</th><th>Waste</th><th>% dari Total</th></tr></thead><tbody>';
-  d.rows.forEach(function(r, i){
-    html += `<tr><td class="name">${r.category}</td><td>${dpFmt(r.shift1)}</td><td>${dpFmt(r.shift2)}</td><td>${dpFmt(r.shift3)}</td><td>${dpFmt(r.total)}</td><td>${dpFmt(r.waste)}</td><td>${dpGaugeHtml(r.pct, PALETTE[i % PALETTE.length])}</td></tr>`;
-  });
-  html += '</tbody></table>';
-  el.innerHTML = html;
-}
-
-/* ---------- 2. WIP ---------- */
-function dpRenderWIP(d){
-  var el = document.getElementById('sec-wip');
-  if (dpErrorOrEmpty(el, d, 'Tidak ada data WIP pada rentang filter ini.')) return;
-
-  var s = d.summary;
-  var slices = [
-    { label: 'Bahan', value: s.bahan, color: 'var(--c2)'.replace('var(--c2)', '#14B8A6') },
-    { label: 'WIP', value: s.wip, color: '#8B5CF6' }
-  ];
-
-  var last14 = d.rows.slice(-14);
-  var barsBahan = last14.map(function(r){ return { label: r.tanggal, value: r.bahan, color: '#14B8A6' }; });
-  var barsWip = last14.map(function(r){ return { label: r.tanggal, value: r.wip, color: '#8B5CF6' }; });
-
-  var html = '<h2>Ringkasan — Sheet WIP</h2>';
-  html += `<div class="stat-row">
-    <div class="stat-card"><div class="k">Total Bahan</div><div class="v" style="color:#14B8A6">${dpFmt(s.bahan)}</div></div>
-    <div class="stat-card"><div class="k">Total WIP</div><div class="v" style="color:#8B5CF6">${dpFmt(s.wip)}</div></div>
-    <div class="stat-card"><div class="k">Total Campuran</div><div class="v accent">${dpFmt(s.total)}</div></div>
-    <div class="stat-card"><div class="k">% Bahan / % WIP</div><div class="v">${dpFmt(s.pctBahan,2)}% / ${dpFmt(s.pctWip,2)}%</div></div>
-  </div>`;
-  html += `<div class="chart-row">
-    <div class="chart-card"><h3>Komposisi Bahan vs WIP (Total Campuran = 100%)</h3>${dpDonutHtml(slices,'100%')}</div>
-    <div class="chart-card"><h3>Bahan — 14 Hari Terakhir</h3>${dpBarsHtml(barsBahan)}</div>
-  </div>`;
-  html += '<h2>Rincian Harian</h2>';
-  html += '<table><thead><tr><th>Tanggal</th><th>Bahan</th><th>WIP</th><th>Total Campuran</th><th>% Bahan</th><th>% WIP</th><th>Cek (harus 100%)</th></tr></thead><tbody>';
-  d.rows.forEach(function(r){
-    var checkClass = Math.abs(r.pctCheck - 100) < 0.5 ? 'good' : 'bad';
-    html += `<tr><td class="name">${r.tanggal}</td><td>${dpFmt(r.bahan)}</td><td>${dpFmt(r.wip)}</td><td>${dpFmt(r.total)}</td><td>${dpGaugeHtml(r.pctBahan,'#14B8A6')}</td><td>${dpGaugeHtml(r.pctWip,'#8B5CF6')}</td><td class="v ${checkClass}" style="font-size:12px;">${dpFmt(r.pctCheck,2)}%</td></tr>`;
-  });
-  html += '</tbody></table>';
-  el.innerHTML = html;
-}
-
-/* ---------- 3. HASIL THERMO ---------- */
-function dpRenderThermo(d){
-  var el = document.getElementById('sec-thermo');
-  if (dpErrorOrEmpty(el, d, 'Tidak ada data HASIL THERMO pada rentang filter ini.')) return;
-
-  var s = d.summary;
-  var pctBars = d.rows.map(function(r){ return { label: r.tf, value: r.pct, color: r.low ? '#EF4444' : '#3B82F6' }; });
-  var tonaseSlices = d.rows.map(function(r,i){ return { label: r.tf, value: r.tonase, color: PALETTE[i % PALETTE.length] }; });
-
-  var html = '<h2>Ringkasan — Sheet HASIL THERMO</h2>';
-  html += `<div class="stat-row">
-    <div class="stat-card"><div class="k">Total Sheet Naik</div><div class="v">${dpFmt(s.sheetNaik)}</div></div>
-    <div class="stat-card"><div class="k">Total Pemakaian Sheet</div><div class="v">${dpFmt(s.pemakaianSheet)}</div></div>
-    <div class="stat-card"><div class="k">Total Tonase</div><div class="v accent">${dpFmt(s.tonase,2)}</div></div>
-    <div class="stat-card"><div class="k">% Tonase / Pemakaian Sheet (Grand)</div><div class="v ${s.low ? 'bad' : 'good'}">${dpFmt(s.pct,2)}%</div></div>
-  </div>`;
-  html += `<div class="chart-row">
-    <div class="chart-card" style="flex:1 1 100%;"><h3>Percentage per Mesin TF (Tonase ÷ Pemakaian Sheet) — merah = di bawah ${s.threshold}%</h3>${dpBarsHtml(pctBars,2)}</div>
-  </div>`;
-  html += `<div class="chart-row">
-    <div class="chart-card"><h3>Kontribusi Tonase per Mesin TF</h3>${dpDonutHtml(tonaseSlices,'Kg')}</div>
-  </div>`;
-  html += '<h2>Per Mesin TF</h2>';
-  html += '<table><thead><tr><th>TF</th><th>Sheet Naik</th><th>Pemakaian Sheet</th><th>Box</th><th>Pcs</th><th>Tonase</th><th>Gram</th><th>BS Skalaton</th><th>BS Sheet</th><th>Waste</th><th>%</th></tr></thead><tbody>';
-  d.rows.forEach(function(r){
-    html += `<tr><td class="name">${r.tf}</td><td>${dpFmt(r.sheetNaik)}</td><td>${dpFmt(r.pemakaianSheet)}</td><td>${dpFmt(r.box)}</td><td>${dpFmt(r.pcs)}</td><td>${dpFmt(r.tonase,2)}</td><td>${dpFmt(r.gram,2)}</td><td>${dpFmt(r.bsSkalaton,2)}</td><td>${dpFmt(r.bsSheet,2)}</td><td>${dpFmt(r.waste,2)}</td><td>${dpGaugeHtml(r.pct, r.low ? '#EF4444' : '#3B82F6')}</td></tr>`;
-  });
-  html += `<tr style="font-weight:700;background:#FAFBFD;"><td class="name">Grand Total</td><td>${dpFmt(s.sheetNaik)}</td><td>${dpFmt(s.pemakaianSheet)}</td><td>${dpFmt(s.box)}</td><td>${dpFmt(s.pcs)}</td><td>${dpFmt(s.tonase,2)}</td><td>${dpFmt(s.gram,2)}</td><td>${dpFmt(s.bsSkalaton,2)}</td><td>${dpFmt(s.bsSheet,2)}</td><td>${dpFmt(s.waste,2)}</td><td>${dpGaugeHtml(s.pct, s.low ? '#EF4444' : '#3B82F6')}</td></tr>`;
-  html += '</tbody></table>';
-  el.innerHTML = html;
-}
-
-/* ---------- 4. EXTRUDER ---------- */
-function dpRenderExtruder(d){
-  var el = document.getElementById('sec-extruder');
-  if (dpErrorOrEmpty(el, d, 'Tidak ada data EXTRUDER pada rentang filter ini.')) return;
-
-  var s = d.summary;
-  var slices = [
-    { label: 'Baik', value: Math.max(0, s.total * s.pctBaik/100), color: '#22C55E' },
-    { label: 'BS Sayat', value: s.bsSayat, color: '#EF4444' },
-    { label: 'BS Sheet', value: s.bsSheet, color: '#F59E0B' },
-    { label: 'Waste', value: s.waste, color: '#EC4899' }
-  ];
-  var topTotal = dpTopNPlusOther(d.rows, 'total', 'produk', 8).map(function(t,i){ return { label:t.label, value:t.value, color:'#3B82F6' }; });
-
-  var html = '<h2>Ringkasan — Sheet EXTRUDER</h2>';
-  html += `<div class="stat-row">
-    <div class="stat-card"><div class="k">Total Sheet</div><div class="v accent">${dpFmt(s.total)}</div></div>
-    <div class="stat-card"><div class="k">% BS Sayat</div><div class="v bad">${dpFmt(s.pctBsSayat,2)}%</div></div>
-    <div class="stat-card"><div class="k">% BS Sheet</div><div class="v bad">${dpFmt(s.pctBsSheet,2)}%</div></div>
-    <div class="stat-card"><div class="k">% Waste</div><div class="v bad">${dpFmt(s.pctWaste,2)}%</div></div>
-    <div class="stat-card"><div class="k">% Baik</div><div class="v good">${dpFmt(s.pctBaik,2)}%</div></div>
-  </div>`;
-  html += `<div class="chart-row">
-    <div class="chart-card"><h3>Komposisi Hasil (Baik / BS Sayat / BS Sheet / Waste)</h3>${dpDonutHtml(slices,'Total')}</div>
-    <div class="chart-card"><h3>Total per Produk</h3>${dpBarsHtml(topTotal)}</div>
-  </div>`;
-  html += '<div class="note">% Baik = 100% − % BS Sayat − % BS Sheet − % Waste.</div>';
-  html += '<h2>Per Produk</h2>';
-  html += '<table><thead><tr><th>Nama Produk</th><th>Total</th><th>BS Sayat</th><th>BS Sheet</th><th>Waste</th><th>% BS Sayat</th><th>% BS Sheet</th><th>% Waste</th><th>% Baik</th></tr></thead><tbody>';
-  d.rows.forEach(function(r){
-    html += `<tr><td class="name">${r.produk}</td><td>${dpFmt(r.total)}</td><td>${dpFmt(r.bsSayat)}</td><td>${dpFmt(r.bsSheet)}</td><td>${dpFmt(r.waste,2)}</td><td>${dpGaugeHtml(r.pctBsSayat,'#EF4444')}</td><td>${dpGaugeHtml(r.pctBsSheet,'#F59E0B')}</td><td>${dpGaugeHtml(r.pctWaste,'#EC4899',2)}</td><td>${dpGaugeHtml(r.pctBaik,'#22C55E')}</td></tr>`;
-  });
-  html += '</tbody></table>';
-  el.innerHTML = html;
-}
-
-/* ---------- 5. TOTAL SHEET ---------- */
-function dpRenderTotalSheet(d){
-  var el = document.getElementById('sec-totalSheet');
-  if (dpErrorOrEmpty(el, d, 'Tidak ada data TOTAL SHEET pada rentang filter ini.')) return;
-
-  var bars = d.rows.map(function(r, i){ return { label: 'Ext ' + r.ext, value: r.total, color: PALETTE[i % PALETTE.length] }; });
-
-  var html = '<h2>Kontribusi per Extruder (Line) — Sheet TOTAL SHEET</h2>';
-  html += `<div class="stat-row"><div class="stat-card"><div class="k">Grand Total</div><div class="v accent">${dpFmt(d.grandTotal)}</div></div></div>`;
-  html += `<div class="chart-row"><div class="chart-card"><h3>Total per Extruder</h3>${dpBarsHtml(bars)}</div></div>`;
-  html += '<table><thead><tr><th>Extruder</th><th>Shift 1</th><th>Shift 2</th><th>Shift 3</th><th>Total</th><th>% Kontribusi</th></tr></thead><tbody>';
-  d.rows.forEach(function(r, i){
-    html += `<tr><td class="name">${r.ext}</td><td>${dpFmt(r.shift1)}</td><td>${dpFmt(r.shift2)}</td><td>${dpFmt(r.shift3)}</td><td>${dpFmt(r.total)}</td><td>${dpGaugeHtml(r.pct, PALETTE[i % PALETTE.length])}</td></tr>`;
-  });
-  html += '</tbody></table>';
-  el.innerHTML = html;
-}
-
-/* ---------- 6. TEHNIK ---------- */
-function dpRenderTehnik(d){
-  var el = document.getElementById('sec-tehnik');
-  if (dpErrorOrEmpty(el, d, 'Tidak ada data TEHNIK pada rentang filter ini.')) return;
-
-  var bars = d.rows.map(function(r){ return { label: r.divisi, value: r.totalDowntime, color: '#EF4444' }; });
-
-  var html = '<h2>Downtime per Divisi / Mesin — Sheet TEHNIK</h2>';
-  html += `<div class="stat-row"><div class="stat-card"><div class="k">Total Downtime</div><div class="v bad">${dpFmt(d.totalDowntime)}</div></div></div>`;
-  html += `<div class="chart-row"><div class="chart-card"><h3>Downtime per Divisi</h3>${dpBarsHtml(bars)}</div></div>`;
-  html += '<table><thead><tr><th>Divisi / Mesin</th><th>Jumlah Kejadian</th><th>Total Downtime</th><th>% dari Total</th></tr></thead><tbody>';
-  d.rows.forEach(function(r){
-    html += `<tr><td class="name">${r.divisi}</td><td>${r.kejadian}</td><td>${dpFmt(r.totalDowntime)}</td><td>${dpGaugeHtml(r.pct,'#EF4444')}</td></tr>`;
-  });
-  html += '</tbody></table>';
-
-  if (d.kejadian && d.kejadian.length){
-    html += '<h2>Riwayat Kejadian (top 50, urut downtime terbesar)</h2>';
-    html += '<table><thead><tr><th>Tanggal</th><th>Divisi</th><th>Downtime</th><th>Keterangan</th><th>Nama</th></tr></thead><tbody>';
-    d.kejadian.forEach(function(k){
-      html += `<tr><td>${k.tanggal}</td><td class="name">${k.divisi}</td><td>${dpFmt(k.downtime)}</td><td class="name">${k.keterangan||'-'}</td><td class="name">${k.nama||'-'}</td></tr>`;
-    });
-    html += '</tbody></table>';
+  function fetchData() {
+    document.getElementById('loader').style.display = 'flex';
+    const filters = {
+      startDate: document.getElementById('tgl1').value,
+      endDate: document.getElementById('tgl2').value
+    };
+    
+    google.script.run
+      .withSuccessHandler(renderDashboard)
+      .withFailureHandler(err => {
+        document.getElementById('loader').style.display = 'none';
+        alert("Gagal: " + err.message);
+      })
+      .dpGetDashboardData(filters);
   }
-  el.innerHTML = html;
-}
 
-dpApplyFilter();
+  function renderDashboard(data) {
+    document.getElementById('loader').style.display = 'none';
+    document.getElementById('sync-time').innerText = new Date().toLocaleTimeString('id-ID');
+
+    // 1. Metrics Header
+    let sumGiling = data.giling.rows.reduce((a, b) => a + b.total, 0);
+    document.getElementById('m-giling').innerText = Math.round(sumGiling).toLocaleString('id-ID');
+    document.getElementById('m-dt').innerText = data.tehnik.totalDowntime.toLocaleString('id-ID');
+    document.getElementById('m-wip').innerText = data.wip.summary.pctWip.toFixed(1) + '%';
+    
+    const eff = data.thermo.summary;
+    const mThermo = document.getElementById('m-thermo');
+    mThermo.innerText = eff.pct.toFixed(1) + '%';
+    mThermo.className = 'metric-value ' + (eff.pct < 40 ? 'val-danger' : 'val-success');
+
+    // 2. Main Table (Thermo List Produk)
+    let tHtml = '';
+    data.thermo.rows.forEach(row => {
+      const isLow = row.pct < 40;
+      tHtml += `
+        <tr>
+          <td class="ps-3 border-bottom-0">
+            <div class="fw-bold text-truncate" style="max-width:180px;">${row.tf}</div>
+            <small class="text-muted" style="font-size:10px;">S.NAIK: ${Math.round(row.sheetNaik)}</small>
+          </td>
+          <td class="text-end fw-semibold">${Math.round(row.box).toLocaleString()}</td>
+          <td class="text-end text-primary">${Math.round(row.tonase).toLocaleString()}</td>
+          <td class="text-end pe-3 fw-bold ${isLow ? 'val-danger' : 'val-success'}">
+            ${row.pct.toFixed(1)}%
+          </td>
+        </tr>`;
+    });
+    document.getElementById('tbody-thermo').innerHTML = tHtml;
+
+    // 3. Line Sheet Contribution
+    let lHtml = '';
+    data.totalSheet.rows.forEach(row => {
+      lHtml += `
+        <div class="list-group-item d-flex justify-content-between align-items-center">
+          <span class="small fw-bold">LINE ${row.ext}</span>
+          <span class="text-primary fw-bold">${Math.round(row.total).toLocaleString()}</span>
+        </div>`;
+    });
+    document.getElementById('list-line').innerHTML = lHtml;
+
+    // 4. Quality Analysis
+    const q = data.extruder.summary;
+    document.getElementById('q-sayat').innerText = q.pctBsSayat.toFixed(1) + '%';
+    document.getElementById('q-sheet').innerText = q.pctBsSheet.toFixed(1) + '%';
+    document.getElementById('q-waste').innerText = q.pctWaste.toFixed(1) + '%';
+  }
 </script>
+
 </body>
 </html>
