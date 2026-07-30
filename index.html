@@ -3,144 +3,71 @@
 <head>
   <base target="_top">
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Dashboard Produksi</title>
-  <!-- CSS Library -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css2?family=Segoe+UI:wght@400;600;700&display=swap" rel="stylesheet">
-  
   <style>
-    :root {
-      --primary-color: #007bff;
-      --danger-color: #dc3545;
-      --success-color: #198754;
-      --bg-body: #f4f7f6;
-    }
-    
-    body { 
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
-      background-color: var(--bg-body); 
-      font-size: 14px;
-      margin: 0; padding: 0;
-    }
-
-    /* Navbar khusus Mobile friendly */
-    .nav-custom {
-      background: #ffffff;
-      padding: 10px 15px;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-      position: sticky; top: 0; z-index: 1000;
-    }
-
-    .container-main { padding: 15px; }
-
-    /* Card Styling */
-    .card {
-      border: none; border-radius: 10px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-      margin-bottom: 15px;
-    }
-    .card-header {
-      background: #fff; border-bottom: 1px solid #eee;
-      font-weight: 700; color: #333; padding: 12px 15px;
-    }
-
-    /* Metric Boxes */
-    .metric-box { padding: 15px; text-align: center; }
-    .metric-value { font-size: 1.5rem; font-weight: 800; display: block; }
-    .metric-label { font-size: 0.75rem; color: #666; text-transform: uppercase; letter-spacing: 1px; }
-
-    /* Table Styling */
-    .table-responsive { max-height: 400px; overflow-y: auto; }
-    .table thead th { position: sticky; top: 0; background: #f8f9fa; z-index: 1; }
-
-    /* Conditional Colors */
-    .val-danger { color: var(--danger-color) !important; }
-    .val-success { color: var(--success-color) !important; }
-
-    /* Loading Overlay */
+    body { background-color: #f4f7f6; font-size: 13px; }
+    .card { border: none; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); margin-bottom: 12px; }
+    .metric-val { font-size: 1.4rem; font-weight: 800; display: block; }
+    .metric-label { font-size: 0.7rem; color: #666; font-weight: bold; }
     #loader {
       position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-      background: rgba(255,255,255,0.9); z-index: 2000;
+      background: white; z-index: 9999;
       display: flex; flex-direction: column; align-items: center; justify-content: center;
     }
-
-    /* Custom scrollbar */
-    ::-webkit-scrollbar { width: 5px; }
-    ::-webkit-scrollbar-track { background: #f1f1f1; }
-    ::-webkit-scrollbar-thumb { background: #ccc; border-radius: 10px; }
-
-    /* Mobile Specific */
-    @media (max-width: 576px) {
-      .metric-value { font-size: 1.2rem; }
-      .container-main { padding: 8px; }
-      .nav-custom { flex-direction: column; gap: 10px; }
-      .btn-sm-full { width: 100%; }
-    }
+    .val-danger { color: #dc3545 !important; }
+    .val-success { color: #198754 !important; }
+    .table-res { max-height: 350px; overflow-y: auto; }
   </style>
 </head>
 <body>
 
 <div id="loader">
-  <div class="spinner-border text-primary" role="status"></div>
-  <span class="mt-2 fw-bold">Mematikan Data...</span>
+  <div class="spinner-border text-primary"></div>
+  <span class="mt-2 fw-bold">Memuat Data Produksi...</span>
 </div>
 
-<div class="nav-custom d-flex justify-content-between align-items-center">
-  <div class="fw-bold text-primary fs-5">PRODUKSI-DASHBOARD</div>
-  <div class="d-flex gap-1 align-items-center">
-    <input type="date" id="tgl1" class="form-control form-control-sm">
-    <input type="date" id="tgl2" class="form-control form-control-sm">
-    <button onclick="fetchData()" class="btn btn-primary btn-sm btn-sm-full">OK</button>
+<div class="p-2 border-bottom bg-white sticky-top d-flex justify-content-between align-items-center">
+  <b class="text-primary">DASHBOARD</b>
+  <div class="d-flex gap-1">
+    <input type="date" id="t1" class="form-control form-control-sm" style="width:115px">
+    <input type="date" id="t2" class="form-control form-control-sm" style="width:115px">
+    <button onclick="fetchData()" class="btn btn-primary btn-sm">OK</button>
   </div>
 </div>
 
-<div class="container-main">
-  
-  <!-- Row 1: Summary -->
-  <div class="row g-2 mb-2">
+<div class="container-fluid p-2">
+  <!-- Metric Row -->
+  <div class="row g-2 mb-2 text-center">
     <div class="col-6 col-md-3">
-      <div class="card metric-box">
-        <span class="metric-label">Giling (Kg)</span>
-        <span id="m-giling" class="metric-value">-</span>
-      </div>
+      <div class="card p-2"><span class="metric-label">Giling (Kg)</span><span id="m-giling" class="metric-val">-</span></div>
     </div>
     <div class="col-6 col-md-3">
-      <div class="card metric-box">
-        <span class="metric-label">Downtime</span>
-        <span id="m-dt" class="metric-value text-danger">-</span>
-      </div>
+      <div class="card p-2"><span class="metric-label">Downtime</span><span id="m-dt" class="metric-val text-danger">-</span></div>
     </div>
     <div class="col-6 col-md-3">
-      <div class="card metric-box border-start border-4 border-info">
-        <span class="metric-label">Avg. Thermo</span>
-        <span id="m-thermo" class="metric-value">-</span>
-      </div>
+      <div class="card p-2"><span class="metric-label">Eff. Thermo</span><span id="m-thermo" class="metric-val">-</span></div>
     </div>
     <div class="col-6 col-md-3">
-      <div class="card metric-box border-start border-4 border-success">
-        <span class="metric-label">WIP Ratio</span>
-        <span id="m-wip" class="metric-value">-</span>
-      </div>
+      <div class="card p-2"><span class="metric-label">WIP Ratio</span><span id="m-wip" class="metric-val text-success">-</span></div>
     </div>
   </div>
 
-  <div class="row g-3">
-    <!-- Thermo Product Table -->
+  <div class="row g-2">
     <div class="col-lg-8">
       <div class="card">
-        <div class="card-header d-flex justify-content-between">
-          <span>TARGET & EFF. PRODUK (THERMO)</span>
+        <div class="card-header bg-white d-flex justify-content-between py-2">
+          <b>DETAIL THERMO</b>
           <span class="badge bg-danger">Min 40%</span>
         </div>
-        <div class="table-responsive">
+        <div class="table-res">
           <table class="table table-sm table-hover mb-0">
-            <thead>
+            <thead class="table-light">
               <tr>
-                <th class="ps-3">Produk / TF</th>
+                <th class="ps-2">Item/TF</th>
                 <th class="text-end">Box</th>
-                <th class="text-end">Tonase</th>
-                <th class="text-end pe-3">Eff %</th>
+                <th class="text-end">Kg</th>
+                <th class="text-end pe-2">Eff%</th>
               </tr>
             </thead>
             <tbody id="tbody-thermo"></tbody>
@@ -149,118 +76,91 @@
       </div>
     </div>
 
-    <!-- Line & Quality Sidebar -->
     <div class="col-lg-4">
-      <!-- Line Stats -->
-      <div class="card mb-3">
-        <div class="card-header">KONTRIBUSI LINE SHEET</div>
+      <div class="card">
+        <div class="card-header bg-white py-2"><b>LINE SHEET</b></div>
         <div class="list-group list-group-flush" id="list-line"></div>
       </div>
-
-      <!-- Quality Loss -->
-      <div class="card bg-dark text-white p-3">
-        <div class="fw-bold mb-3 text-center border-bottom border-secondary pb-2">QUALITY LOSS ANALYSIS</div>
-        <div class="row g-2 text-center">
-          <div class="col-4">
-            <div id="q-sayat" class="fw-bold text-warning fs-5">0%</div>
-            <div class="small text-secondary">Sayat</div>
+      
+      <div class="card bg-dark text-white p-2">
+        <div class="row text-center g-0">
+          <div class="col-4 border-end border-secondary">
+            <div id="q-sayat" class="fw-bold text-warning">0%</div><small style="font-size:9px">Sayat</small>
+          </div>
+          <div class="col-4 border-end border-secondary">
+            <div id="q-sheet" class="fw-bold text-warning">0%</div><small style="font-size:9px">Sheet</small>
           </div>
           <div class="col-4">
-            <div id="q-sheet" class="fw-bold text-warning fs-5">0%</div>
-            <div class="small text-secondary">BS Sheet</div>
-          </div>
-          <div class="col-4">
-            <div id="q-waste" class="fw-bold text-warning fs-5">0%</div>
-            <div class="small text-secondary">Waste</div>
+            <div id="q-waste" class="fw-bold text-warning">0%</div><small style="font-size:9px">Waste</small>
           </div>
         </div>
       </div>
     </div>
   </div>
-
-  <div class="text-center mt-4 pb-4">
-    <small class="text-muted">Update terakhir: <span id="sync-time">-</span></small>
-  </div>
-
 </div>
 
 <script>
-  // Initial Load
   window.onload = function() {
-    const today = new Date().toISOString().split('T')[0];
-    document.getElementById('tgl1').value = today;
-    document.getElementById('tgl2').value = today;
+    const d = new Date().toISOString().split('T')[0];
+    document.getElementById('t1').value = d;
+    document.getElementById('t2').value = d;
     fetchData();
   };
 
   function fetchData() {
     document.getElementById('loader').style.display = 'flex';
-    const filters = {
-      startDate: document.getElementById('tgl1').value,
-      endDate: document.getElementById('tgl2').value
-    };
+    const f = { startDate: document.getElementById('t1').value, endDate: document.getElementById('t2').value };
     
     google.script.run
-      .withSuccessHandler(renderDashboard)
+      .withSuccessHandler(res => {
+        document.getElementById('loader').style.display = 'none';
+        render(res);
+      })
       .withFailureHandler(err => {
         document.getElementById('loader').style.display = 'none';
-        alert("Gagal: " + err.message);
+        alert("CRITICAL ERROR: " + err.message);
       })
-      .dpGetDashboardData(filters);
+      .dpGetDashboardData(f);
   }
 
-  function renderDashboard(data) {
-    document.getElementById('loader').style.display = 'none';
-    document.getElementById('sync-time').innerText = new Date().toLocaleTimeString('id-ID');
-
-    // 1. Metrics Header
-    let sumGiling = data.giling.rows.reduce((a, b) => a + b.total, 0);
-    document.getElementById('m-giling').innerText = Math.round(sumGiling).toLocaleString('id-ID');
-    document.getElementById('m-dt').innerText = data.tehnik.totalDowntime.toLocaleString('id-ID');
+  function render(data) {
+    // Math Summary
+    let giling = data.giling.rows.reduce((a, b) => a + b.total, 0);
+    document.getElementById('m-giling').innerText = Math.round(giling).toLocaleString('id-ID');
+    document.getElementById('m-dt').innerText = data.tehnik.totalDowntime;
     document.getElementById('m-wip').innerText = data.wip.summary.pctWip.toFixed(1) + '%';
     
-    const eff = data.thermo.summary;
-    const mThermo = document.getElementById('m-thermo');
-    mThermo.innerText = eff.pct.toFixed(1) + '%';
-    mThermo.className = 'metric-value ' + (eff.pct < 40 ? 'val-danger' : 'val-success');
+    const eth = data.thermo.summary;
+    document.getElementById('m-thermo').innerText = eth.pct.toFixed(1) + '%';
+    document.getElementById('m-thermo').className = 'metric-val ' + (eth.pct < 40 ? 'val-danger' : 'val-success');
 
-    // 2. Main Table (Thermo List Produk)
-    let tHtml = '';
-    data.thermo.rows.forEach(row => {
-      const isLow = row.pct < 40;
-      tHtml += `
-        <tr>
-          <td class="ps-3 border-bottom-0">
-            <div class="fw-bold text-truncate" style="max-width:180px;">${row.tf}</div>
-            <small class="text-muted" style="font-size:10px;">S.NAIK: ${Math.round(row.sheetNaik)}</small>
-          </td>
-          <td class="text-end fw-semibold">${Math.round(row.box).toLocaleString()}</td>
-          <td class="text-end text-primary">${Math.round(row.tonase).toLocaleString()}</td>
-          <td class="text-end pe-3 fw-bold ${isLow ? 'val-danger' : 'val-success'}">
-            ${row.pct.toFixed(1)}%
-          </td>
-        </tr>`;
+    // Table Thermo
+    let h = '';
+    data.thermo.rows.forEach(r => {
+      h += `<tr>
+        <td class="ps-2"><b>${r.tf}</b></td>
+        <td class="text-end">${Math.round(r.box)}</td>
+        <td class="text-end text-primary">${Math.round(r.tonase)}</td>
+        <td class="text-end pe-2 fw-bold ${r.pct < 40 ? 'val-danger' : 'val-success'}">${r.pct.toFixed(1)}%</td>
+      </tr>`;
     });
-    document.getElementById('tbody-thermo').innerHTML = tHtml;
+    document.getElementById('tbody-thermo').innerHTML = h;
 
-    // 3. Line Sheet Contribution
-    let lHtml = '';
-    data.totalSheet.rows.forEach(row => {
-      lHtml += `
-        <div class="list-group-item d-flex justify-content-between align-items-center">
-          <span class="small fw-bold">LINE ${row.ext}</span>
-          <span class="text-primary fw-bold">${Math.round(row.total).toLocaleString()}</span>
-        </div>`;
+    // Line Sheet
+    let l = '';
+    data.totalSheet.rows.forEach(r => {
+      l += `<div class="list-group-item d-flex justify-content-between py-1">
+        <small>LINE ${r.ext}</small><b>${Math.round(r.total)}</b>
+      </div>`;
     });
-    document.getElementById('list-line').innerHTML = lHtml;
+    document.getElementById('list-line').innerHTML = l;
 
-    // 4. Quality Analysis
+    // Quality
     const q = data.extruder.summary;
     document.getElementById('q-sayat').innerText = q.pctBsSayat.toFixed(1) + '%';
     document.getElementById('q-sheet').innerText = q.pctBsSheet.toFixed(1) + '%';
     document.getElementById('q-waste').innerText = q.pctWaste.toFixed(1) + '%';
   }
 </script>
-
 </body>
 </html>
