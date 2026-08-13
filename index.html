@@ -5,7 +5,6 @@
 <meta charset="utf-8">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <style>
   :root{
     --bg:#F5F7FB;
@@ -38,26 +37,6 @@
     overflow:hidden;
   }
   @media (prefers-reduced-motion: reduce){ *{transition:none !important; animation:none !important;} }
-
-  /* ===== EXPORT TOOLBAR ===== */
-  #exportBar{ display:flex; gap:8px; padding:10px 24px; background:#fff; border-bottom:1px solid var(--line); }
-  .export-btn{
-    background:#fff; border:1px solid #D7DCE6; color:var(--ink); border-radius:8px;
-    padding:8px 14px; font-size:11.5px; font-weight:700; letter-spacing:.02em; text-transform:uppercase;
-    cursor:pointer; font-family:'Space Grotesk', sans-serif; display:flex; align-items:center; gap:6px;
-  }
-  .export-btn:hover{ background:#FAFBFD; }
-
-  @media print{
-    #panel, #tabs, #exportBar, #loading{ display:none !important; }
-    body{ height:auto; overflow:visible; }
-    #main, #content{ overflow:visible; height:auto; }
-    .section{ display:none !important; }
-    .section.active{ display:block !important; }
-    .chart-row{ break-inside:avoid; }
-    table{ break-inside:auto; }
-    tr{ break-inside:avoid; }
-  }
 
   /* ===== LEFT PANEL ===== */
   #panel{
@@ -212,10 +191,6 @@
 </div>
 
 <div id="main">
-  <div id="exportBar">
-    <button class="export-btn" onclick="dpDownloadPNG()">⬇ Download PNG</button>
-    <button class="export-btn" onclick="dpPrintPDF()">🖨 Print / PDF</button>
-  </div>
   <div id="tabs">
     <div class="tab active" data-tab="giling" onclick="dpSwitchTab('giling')">Giling</div>
     <div class="tab" data-tab="wip" onclick="dpSwitchTab('wip')">WIP</div>
@@ -258,31 +233,6 @@ function dpBuildHariButtons(){
   });
 }
 dpBuildHariButtons();
-
-function dpCurrentTabName(){
-  var active = document.querySelector('.tab.active');
-  return active ? active.textContent.trim().replace(/\s+/g,'-').toLowerCase() : 'dashboard';
-}
-
-function dpDownloadPNG(){
-  var target = document.querySelector('.section.active');
-  if (!target || typeof html2canvas === 'undefined'){
-    alert('Fitur download PNG belum siap, coba muat ulang halaman.');
-    return;
-  }
-  html2canvas(target, { backgroundColor: '#ffffff', scale: 2 }).then(function(canvas){
-    var link = document.createElement('a');
-    link.download = 'dashboard-' + dpCurrentTabName() + '-' + new Date().toISOString().slice(0,10) + '.png';
-    link.href = canvas.toDataURL('image/png');
-    link.click();
-  }).catch(function(err){
-    alert('Gagal membuat gambar: ' + err.message);
-  });
-}
-
-function dpPrintPDF(){
-  window.print();
-}
 
 function dpSwitchTab(name){
   document.querySelectorAll('.tab').forEach(function(t){ t.classList.toggle('active', t.dataset.tab === name); });
