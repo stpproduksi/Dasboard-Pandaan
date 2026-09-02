@@ -377,13 +377,10 @@ function dpTopNPlusOther(rows, valueKey, labelKey, n){
 
 var WEBAPP_URL = 'https://script.google.com/macros/s/AKfycbz7IzVHHpUHk09Ympe_lMKHAPMchC55Fb0tfhX9GOa2o_M-mO31cjSv6yKfu_f6w8us6w/exec';
 
-function dpFetchData(filters, onSuccess, onError){
+function dpFetchData(filters, onSuccess, onError, isRetry){
   var runningInsideAppsScript = (typeof google !== 'undefined' && google.script && google.script.run);
   if (runningInsideAppsScript) {
-    google.script.run
-      .withSuccessHandler(onSuccess)
-      .withFailureHandler(onError)
-      .dpGetDashboardData(filters);
+    google.script.run.withSuccessHandler(onSuccess).withFailureHandler(onError).dpGetDashboardData(filters);
     return;
   }
   var qs = ['action=dashboard'];
@@ -393,7 +390,13 @@ function dpFetchData(filters, onSuccess, onError){
   fetch(WEBAPP_URL + '?' + qs.join('&'))
     .then(function(res){ return res.json(); })
     .then(onSuccess)
-    .catch(onError);
+    .catch(function(err){
+      if (!isRetry) {
+        dpFetchData(filters, onSuccess, onError, true);
+      } else {
+        onError(err);
+      }
+    });
 }
 
 function dpApplyFilter(){
