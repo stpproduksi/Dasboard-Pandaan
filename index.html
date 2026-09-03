@@ -603,7 +603,14 @@ function dpRenderTehnik(d){
   }
   el.innerHTML = html;
 }
-
+(function dpSetDefaultRange(){
+  var now = new Date();
+  var first = new Date(now.getFullYear(), now.getMonth(), 1);
+  function toISO(d){ return d.toISOString().slice(0,10); }
+  document.getElementById('startDate').value = toISO(first);
+  document.getElementById('endDate').value = toISO(now);
+})();
+dpApplyFilter();
 dpApplyFilter();
 dpApplyFilter();
 </script>
